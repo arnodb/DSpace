@@ -68,6 +68,7 @@ public class HandleResource extends Resource {
                         result = new DSpaceObject(dso);
                 }
             } else {
+                context.abort();
                 throw new WebApplicationException(Response.Status.UNAUTHORIZED);
             }
 
