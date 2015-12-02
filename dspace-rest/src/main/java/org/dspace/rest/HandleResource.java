@@ -53,17 +53,27 @@ public class HandleResource extends Resource {
             log.info("DSO Lookup by handle: [" + prefix + "] / [" + suffix + "] got result of: " + dso.getTypeText() + "_" + dso.getID());
 
             if(AuthorizeManager.authorizeActionBoolean(context, dso, org.dspace.core.Constants.READ)) {
-                switch(dso.getType()) {
+                DSpaceObject retval;
+                switch (dso.getType()) {
                     case Constants.COMMUNITY:
-                        return new Community((org.dspace.content.Community) dso, expand, context);
+                        retval = new Community((org.dspace.content.Community) dso, expand, context);
+                        break;
                     case Constants.COLLECTION:
-                        return new Collection((org.dspace.content.Collection) dso, expand, context, null, null);
+                        retval = new Collection((org.dspace.content.Collection) dso, expand, context, null, null);
+                        break;
                     case Constants.ITEM:
-                        return new Item((org.dspace.content.Item) dso, expand, context);
+                        retval = new Item((org.dspace.content.Item) dso, expand, context);
+                        break;
                     default:
-                        return new DSpaceObject(dso);
+                        retval = new DSpaceObject(dso);
+                        break;
                 }
+
+                context.complete();
+
+                return retval;
             } else {
+                context.abort();
                 throw new WebApplicationException(Response.Status.UNAUTHORIZED);
             }
         } catch (SQLException e) {
