@@ -114,7 +114,7 @@ public class DSpaceItemDatabaseRepository extends DSpaceItemRepository
                         parts[2]);
                 if (obj == null)
                     throw new IdDoesNotExistException();
-                if (!(obj instanceof Item))
+                if (!(obj instanceof org.dspace.content.Item))
                     throw new IdDoesNotExistException();
 
                 org.dspace.content.Item item = (org.dspace.content.Item) obj;
