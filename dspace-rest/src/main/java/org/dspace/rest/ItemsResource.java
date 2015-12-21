@@ -549,6 +549,9 @@ public class ItemsResource extends Resource
                 }
             }
 
+            // This sets the sequence ID of the new bitstream
+            dspaceItem.update();
+
             dspaceBitstream = org.dspace.content.Bitstream.find(context, dspaceBitstream.getID());
             bitstream = new Bitstream(dspaceBitstream, "");
 
