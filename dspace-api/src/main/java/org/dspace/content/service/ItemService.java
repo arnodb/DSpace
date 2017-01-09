@@ -147,6 +147,16 @@ public interface ItemService extends DSpaceObjectService<Item>, DSpaceObjectLega
     public Iterator<Item> findAllByCollection(Context context, Collection collection) throws SQLException;
 
     /**
+     * Find all the items by UUIDs.
+     *
+     * @param context DSpace context object
+     * @param list of ids
+     * @return the corresponding array of items.
+     * @throws SQLException if database error
+     */
+    public Iterator<Item> findByIds(Context context, List<UUID> uuids) throws SQLException;
+
+    /**
      * See whether this Item is contained by a given Collection.
      * @param item Item
      * @param collection Collection (parent

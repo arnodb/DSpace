@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.content;
 
 import java.io.IOException;
@@ -15,6 +22,13 @@ import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Service implementation for the ItemList object.
+ * This class is responsible for all business logic calls for the ItemList object and is autowired by spring.
+ * This class should never be accessed directly.
+ *
+ * @author delacroix at idmgroup.com
+ */
 public class ListServiceImpl extends DSpaceObjectServiceImpl<ItemList> implements ListService {
 
     /** log4j category */

@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.content;
 
 import java.util.ArrayList;
@@ -21,6 +28,11 @@ import org.apache.log4j.Logger;
 import org.dspace.core.Constants;
 import org.dspace.eperson.EPerson;
 
+/**
+ * Class representing a list of items in DSpace.
+ *
+ * @author delacroix at idmgroup.com
+ */
 @SuppressWarnings("serial")
 @Entity
 @Table(name="list")

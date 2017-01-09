@@ -8,6 +8,7 @@
 package org.dspace.rest.common;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -53,12 +54,14 @@ public class TestJAXBSchema {
                 Item.class,
                 MetadataEntry.class,
                 ResourcePolicy.class,
-                Status.class
+                Status.class,
+                List.class
                 );
         context.generateSchema(resolver);
 
         String res = "org/dspace/rest/common/expected_xsd0.xsd";
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(res);
+        assertNotNull(is);        
         String expected = IOUtils.toString(is, "UTF-8");
 
         // System.err.println(writer.toString());

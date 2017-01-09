@@ -1262,4 +1262,9 @@ prevent the generation of resource policy entry values with null dspace_object a
 
         return false;
     }
+
+	@Override
+	public Iterator<Item> findByIds(Context context, List<UUID> uuids) throws SQLException {
+		return itemDAO.findByIds(context, uuids);
+	}
 }
