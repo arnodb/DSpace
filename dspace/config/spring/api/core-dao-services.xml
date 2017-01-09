@@ -26,6 +26,7 @@
     <bean class="org.dspace.content.dao.impl.MetadataFieldDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.MetadataSchemaDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.MetadataValueDAOImpl"/>
+    <bean class="org.dspace.content.dao.impl.ListDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.SiteDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.WorkspaceItemDAOImpl"/>
 
