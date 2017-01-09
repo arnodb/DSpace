@@ -166,6 +166,11 @@ public abstract class AbstractDSpaceObjectTest extends AbstractUnitTest
             assertThat("SITE type", dSpaceObjectService.find(context,
                 dspaceObject.getID()), notNullValue());
         }
+        else if(this.dspaceObject instanceof ItemList)
+        {
+            assertThat("LIST type", dSpaceObjectService.find(context,
+                dspaceObject.getID()), notNullValue());
+        }
         else
         {
             assertThat("Unknown type", dSpaceObjectService,

@@ -52,6 +52,8 @@ public class ContentServiceFactoryImpl extends ContentServiceFactory {
     private SupervisedItemService supervisedItemService;
     @Autowired(required = true)
     private SiteService siteService;
+    @Autowired(required = true)
+    private ListService listService;
 
 
     @Override
@@ -138,4 +140,9 @@ public class ContentServiceFactoryImpl extends ContentServiceFactory {
     public SiteService getSiteService() {
         return siteService;
     }
+
+	@Override
+	public ListService getListService() {
+		return listService;
+	}
 }

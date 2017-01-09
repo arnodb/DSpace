@@ -42,6 +42,7 @@
         <mapping class="org.dspace.content.Collection"/>
         <mapping class="org.dspace.content.Community"/>
         <mapping class="org.dspace.content.Item"/>
+        <mapping class="org.dspace.content.ItemList"/>
         <mapping class="org.dspace.content.MetadataField"/>
         <mapping class="org.dspace.content.MetadataSchema"/>
         <mapping class="org.dspace.content.MetadataValue"/>

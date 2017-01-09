@@ -53,6 +53,8 @@ public abstract class ContentServiceFactory {
 
     public abstract SiteService getSiteService();
 
+    public abstract ListService getListService();
+
     public InProgressSubmissionService getInProgressSubmissionService(InProgressSubmission inProgressSubmission)
     {
         if(inProgressSubmission instanceof WorkspaceItem)
