@@ -11,6 +11,8 @@
 
   <xs:element name="item" type="item"/>
 
+  <xs:element name="list" type="list"/>
+
   <xs:element name="metadataentry" type="metadataEntry"/>
 
   <xs:element name="resourcepolicy" type="resourcePolicy"/>
@@ -141,6 +143,19 @@
       <xs:element name="okay" type="xs:boolean"/>
       <xs:element name="sourceVersion" type="xs:string" minOccurs="0"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="list">
+    <xs:complexContent>
+      <xs:extension base="dSpaceObject">
+        <xs:sequence>
+          <xs:element name="notes" type="xs:string" minOccurs="0"/>
+          <xs:element name="accesstype" type="xs:string" minOccurs="0"/>
+          <xs:element name="status" type="xs:string" minOccurs="0"/>
+          <xs:element name="creationDate" type="xs:dateTime" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:simpleType name="action">

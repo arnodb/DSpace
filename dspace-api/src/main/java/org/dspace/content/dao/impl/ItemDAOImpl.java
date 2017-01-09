@@ -278,4 +278,11 @@ public class ItemDAOImpl extends AbstractHibernateDSODAO<Item> implements ItemDA
         query.setParameter("withdrawn", includeWithdrawn);
         return count(query); 
     }
+
+	@Override
+	public Iterator<Item> findByIds(Context context, List<UUID> uuids) throws SQLException {
+        Query query = createQuery(context, "FROM Item WHERE id IN (:uuids)");
+        query.setParameterList("uuids", uuids);
+        return iterate(query);
+	}
 }
