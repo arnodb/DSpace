@@ -83,6 +83,9 @@ public class Item extends DSpaceObject implements DSpaceObjectLegacySupport
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
     private final List<Bundle> bundles = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
+    private List<ItemList> lists;
+    
     @Transient
     private transient ItemService itemService;
 
@@ -349,4 +352,8 @@ public class Item extends DSpaceObject implements DSpaceObjectLegacySupport
         }
         return itemService;
     }
+
+	public List<ItemList> getLists() {
+		return lists;
+	}
 }
