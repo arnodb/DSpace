@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -33,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
@@ -382,10 +382,11 @@ public class ListsResource extends Resource {
 				}
 			}));
 			
-			dspaceList.getItems().removeIf(new Predicate<org.dspace.content.Item>() {
+			CollectionUtils.filter(dspaceList.getItems(), new Predicate() {
 				@Override
-				public boolean test(org.dspace.content.Item item) {
-					return itemUUIDS.contains(item.getID());
+				public boolean evaluate(Object object) {
+					org.dspace.content.Item item = (org.dspace.content.Item)object;
+					return !itemUUIDS.contains(item.getID());
 				}
 			});
 			listService.update(context, dspaceList);
