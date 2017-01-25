@@ -13,6 +13,7 @@ import org.dspace.app.util.service.MetadataExposureService;
 import org.dspace.authorize.factory.AuthorizeServiceFactory;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.Bundle;
+import org.dspace.content.ItemList;
 import org.dspace.content.MetadataField;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
@@ -54,6 +55,7 @@ public class Item extends DSpaceObject {
     List<Community> parentCommunityList;
     List<MetadataEntry> metadata;
     List<Bitstream> bitstreams;
+    List<org.dspace.rest.common.List> lists;
 
     public Item(){}
 
@@ -135,6 +137,17 @@ public class Item extends DSpaceObject {
             this.addExpand("bitstreams");
         }
 
+        if(expandFields.contains("lists") || expandFields.contains("all")) {
+        	lists = new ArrayList<>();
+        	for(ItemList list : item.getLists()) {
+        		if(authorizeService.authorizeActionBoolean(context, list, org.dspace.core.Constants.READ)) {
+					lists.add(new org.dspace.rest.common.List(list, servletContext, null, context, null, null));
+				}
+        	}
+        } else {
+            this.addExpand("lists");
+        }
+
         if(!expandFields.contains("all")) {
             this.addExpand("all");
         }
@@ -184,6 +197,10 @@ public class Item extends DSpaceObject {
         return parentCommunityList;
     }
 
+	public List<org.dspace.rest.common.List> getLists() {
+		return lists;
+	}
+
 	public void setParentCollection(Collection parentCollection) {
 		this.parentCollection = parentCollection;
 	}
@@ -196,6 +213,10 @@ public class Item extends DSpaceObject {
 		this.parentCommunityList = parentCommunityList;
 	}
 
+	public void setLists(List<org.dspace.rest.common.List> lists) {
+		this.lists = lists;
+	}
+	
 	@XmlElement(required = true)
 	public void setMetadata(List<MetadataEntry> metadata) {
 		this.metadata = metadata;

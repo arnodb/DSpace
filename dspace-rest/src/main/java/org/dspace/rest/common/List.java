@@ -14,7 +14,6 @@ import java.util.Date;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.WebApplicationException;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.log4j.Logger;
@@ -32,19 +31,11 @@ public class List extends DSpaceObject {
     @SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(List.class);
 
-	@XmlElement
-    private String notes;
-	
-	@XmlElement
-    private String accesstype;
-	
-	@XmlElement
-    private String status;
-	
-	@XmlElement
-    private Date creationDate;
- 
-    private java.util.List<Item> items = new ArrayList<Item>();
+	private String notes;
+	private String accesstype;
+	private String status;
+	private Date creationDate;
+	private java.util.List<Item> items = new ArrayList<Item>();
 
     // jersey needs a bare constructor
     public List() {}
@@ -101,6 +92,26 @@ public class List extends DSpaceObject {
 
 	public Date getCreationDate() {
 		return creationDate;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public void setAccesstype(String accesstype) {
+		this.accesstype = accesstype;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public void setItems(java.util.List<Item> items) {
+		this.items = items;
 	}
 
 }

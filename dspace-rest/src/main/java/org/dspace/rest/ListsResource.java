@@ -10,8 +10,10 @@ package org.dspace.rest;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -30,6 +32,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.factory.AuthorizeServiceFactory;
@@ -91,6 +95,7 @@ public class ListsResource extends Resource {
 
 		try {
 			context = createContext();
+			
 			org.dspace.content.ItemList dspaceList = findList(context, listId, org.dspace.core.Constants.READ);
 			writeStats(dspaceList, UsageEvent.Action.VIEW, user_ip, user_agent, xforwardedfor, headers, request,
 					context);
@@ -133,19 +138,17 @@ public class ListsResource extends Resource {
 			org.dspace.content.ItemList dspaceList = listService.create(context, context.getCurrentUser());
 			if (list != null) {
 				dspaceList.setName(list.getName());
-				if (list.getItems() != null) {
+				if (!CollectionUtils.isEmpty(list.getItems())) {
 					java.util.List<UUID> itemUuids = new ArrayList<UUID>(list.getItems().size());
 					for (Item item : list.getItems()) {
 						itemUuids.add(UUID.fromString(item.getUUID()));
 					}
 					
-					Iterator<org.dspace.content.Item> iterator = itemService.findByIds(context, itemUuids);
-					while (iterator.hasNext()) {
-						dspaceList.getItems().add(iterator.next());
-					}
+					CollectionUtils.addAll(dspaceList.getItems(), itemService.findByIds(context, itemUuids));
 				}
+				listService.update(context, dspaceList);
 			}
-			listService.update(context, dspaceList);
+
 			writeStats(dspaceList, UsageEvent.Action.CREATE, user_ip, user_agent, xforwardedfor, headers, request,
 					context);
 
@@ -282,9 +285,8 @@ public class ListsResource extends Resource {
 			writeStats(list, UsageEvent.Action.DELETE, user_ip, user_agent, xforwardedfor, headers, request, context);
 
 			listService.delete(context, list);
-			listService.update(context, list);
-			context.complete();
 
+			context.complete();
 		} catch (SQLException e) {
 			processException("Could not delete list(id=" + listId + "), SQLException. Message:" + e, context);
 		} catch (AuthorizeException e) {
@@ -302,6 +304,110 @@ public class ListsResource extends Resource {
 
 		log.info("list(id=" + listId + ") was successfully deleted.");
 		return Response.status(Response.Status.OK).build();
+	}
+
+	@POST
+	@Path("/{list_id}/items")
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public List addItem(java.util.List<String> uuids, @PathParam("list_id") String listId,
+			@QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent,
+			@QueryParam("xforwardedfor") String xforwardedfor, @Context HttpHeaders headers,
+			@Context HttpServletRequest request) throws WebApplicationException {
+
+		log.info("Adding items(ids=" + uuids.toString() + ") from list(id=" + listId + ").");
+		org.dspace.core.Context context = null;
+		List retList = null;
+
+		try {
+			context = createContext();
+
+			org.dspace.content.ItemList dspaceList = findList(context, listId, org.dspace.core.Constants.ADD);
+			writeStats(dspaceList, UsageEvent.Action.ADD, user_ip, user_agent, xforwardedfor, headers, request,
+					context);
+			
+			@SuppressWarnings("unchecked")
+			final java.util.List<UUID> itemUUIDS = (java.util.List<UUID>) CollectionUtils.collect(uuids, new Transformer() {
+				@Override
+				public Object transform(Object itemId) {
+					return UUID.fromString((String) itemId);
+				}
+			});
+			
+			Iterator<org.dspace.content.Item> dspaceItems = itemService.findByIds(context, itemUUIDS);
+			CollectionUtils.addAll(dspaceList.getItems(), dspaceItems);
+			listService.update(context, dspaceList);
+			
+			retList = new List(dspaceList, servletContext);
+
+			context.complete();
+		} catch (SQLException e) {
+			processException("Could not add items to list, SQLException. Message: " + e.getMessage(), context);
+		} catch (AuthorizeException e) {
+			processException("Could not add items to list, AuthorizeException. Message:" + e, context);
+		} catch (ContextException e) {
+			processException("Could not add items to list, ContextException. Message: " + e.getMessage(), context);
+		} catch (Exception e) {
+			log.warn("Could not add items to list, Exception. Message:" + e.getMessage());
+			throw e;
+		} finally {
+			processFinally(context);
+		}
+
+		log.info("list(id=" + listId + ") was successfully updated.");
+		return retList;
+	}
+
+	@DELETE
+	@Path("/{list_id}/items")
+	public List removeItem(java.util.List<String> uuids, @PathParam("list_id") String listId,
+			@QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent,
+			@QueryParam("xforwardedfor") String xforwardedfor, @Context HttpHeaders headers,
+			@Context HttpServletRequest request) throws WebApplicationException {
+
+		log.info("Removing items(ids=" + uuids.toString() + ") from list(id=" + listId + ").");
+		org.dspace.core.Context context = null;
+		List retList = null;
+
+		try {
+			context = createContext();
+
+			org.dspace.content.ItemList dspaceList = findList(context, listId, org.dspace.core.Constants.REMOVE);			
+			writeStats(dspaceList, UsageEvent.Action.REMOVE, user_ip, user_agent, xforwardedfor, headers, request, context);
+
+			@SuppressWarnings("unchecked")
+			final java.util.Set<UUID> itemUUIDS = new HashSet<UUID>(CollectionUtils.collect(uuids, new Transformer() {
+				@Override
+				public Object transform(Object itemId) {
+					return UUID.fromString((String) itemId);
+				}
+			}));
+			
+			dspaceList.getItems().removeIf(new Predicate<org.dspace.content.Item>() {
+				@Override
+				public boolean test(org.dspace.content.Item item) {
+					return itemUUIDS.contains(item.getID());
+				}
+			});
+			listService.update(context, dspaceList);
+			
+			retList = new List(dspaceList, servletContext);
+
+			context.complete();
+		} catch (SQLException e) {
+			processException("Could not remove items from list, SQLException. Message: " + e.getMessage(), context);
+		} catch (AuthorizeException e) {
+			processException("Could not remove items from list, AuthorizeException. Message:" + e, context);
+		} catch (ContextException e) {
+			processException("Could not remove items from list, ContextException. Message:" + e.getMessage(), context);
+		} catch (Exception e) {
+			log.warn("Could not remove items from list, Exception. Message:" + e.getMessage());
+			throw e;
+		} finally {
+			processFinally(context);
+		}
+
+		log.info("list(id=" + listId + ") was successfully updated.");
+		return retList;
 	}
 
 }

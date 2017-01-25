@@ -98,11 +98,26 @@
           <xs:element name="archived" type="xs:string" minOccurs="0"/>
           <xs:element name="bitstreams" type="bitstream" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="lastModified" type="xs:string" minOccurs="0"/>
+          <xs:element name="lists" type="list" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="metadata" type="metadataEntry" maxOccurs="unbounded"/>
           <xs:element name="parentCollection" type="collection" minOccurs="0"/>
           <xs:element name="parentCollectionList" type="collection" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="parentCommunityList" type="community" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="withdrawn" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="list">
+    <xs:complexContent>
+      <xs:extension base="dSpaceObject">
+        <xs:sequence>
+          <xs:element name="accesstype" type="xs:string" minOccurs="0"/>
+          <xs:element name="creationDate" type="xs:dateTime" minOccurs="0"/>
+          <xs:element name="items" type="item" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="notes" type="xs:string" minOccurs="0"/>
+          <xs:element name="status" type="xs:string" minOccurs="0"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -143,19 +158,6 @@
       <xs:element name="okay" type="xs:boolean"/>
       <xs:element name="sourceVersion" type="xs:string" minOccurs="0"/>
     </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="list">
-    <xs:complexContent>
-      <xs:extension base="dSpaceObject">
-        <xs:sequence>
-          <xs:element name="notes" type="xs:string" minOccurs="0"/>
-          <xs:element name="accesstype" type="xs:string" minOccurs="0"/>
-          <xs:element name="status" type="xs:string" minOccurs="0"/>
-          <xs:element name="creationDate" type="xs:dateTime" minOccurs="0"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
   </xs:complexType>
 
   <xs:simpleType name="action">

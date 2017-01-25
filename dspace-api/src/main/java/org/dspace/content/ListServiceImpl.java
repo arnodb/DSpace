@@ -19,6 +19,7 @@ import org.dspace.content.dao.ListDAO;
 import org.dspace.content.service.ListService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.core.LogManager;
 import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -82,5 +83,17 @@ public class ListServiceImpl extends DSpaceObjectServiceImpl<ItemList> implement
 		list.setOwner(eperson);
 		return listDAO.create(context, list);
 	}
+	
+	@Override
+	public void update(Context context, ItemList list) throws SQLException, AuthorizeException {
 
-}
+		authorizeService.authorizeAction(context, list, Constants.WRITE);
+
+		log.info(LogManager.getHeader(context, "update_list", "list_id=" + list.getID()));
+		
+		super.update(context, list);
+		
+		listDAO.save(context, list);
+	}
+
+}	
