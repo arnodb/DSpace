@@ -15,6 +15,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
@@ -54,6 +55,17 @@ public class ItemListTest extends AbstractDSpaceObjectTest {
     private Collection collection2;
     private Item item2;
 	
+	private void commitAndReloadEntities() throws SQLException {
+        context.commit();
+        
+        owningCommunity = context.reloadEntity(owningCommunity);
+        collection1 = context.reloadEntity(collection1);
+        collection2 = context.reloadEntity(collection2);
+        item1 = context.reloadEntity(item1);
+        item2 = context.reloadEntity(item2);
+        list = context.reloadEntity(list);
+	}
+
     /**
      * This method will be run before every test as per @Before. It will
      * initialize resources required for the tests.
@@ -84,10 +96,12 @@ public class ItemListTest extends AbstractDSpaceObjectTest {
             
             list = listService.create(context, eperson);
             
+            context.restoreAuthSystemState();
+
             this.dspaceObject = list;
             
             //we need to commit the changes so we don't block the table for testing
-            context.restoreAuthSystemState();
+            commitAndReloadEntities();
         }
         catch (AuthorizeException ex)
         {
@@ -181,6 +195,8 @@ public class ItemListTest extends AbstractDSpaceObjectTest {
         list.getItems().add(item1);
         list.getItems().add(item2);
         
+        commitAndReloadEntities();
+        
         ItemList found = listService.find(context, list.getID());
         assertEquals("testAddItems 0", found.getItems().size(), 2L);
     }
@@ -196,7 +212,9 @@ public class ItemListTest extends AbstractDSpaceObjectTest {
         context.restoreAuthSystemState();
 
         list.setOwner(newOwner);
-        
+
+        commitAndReloadEntities();
+
         ItemList found = listService.find(context, list.getID());
         assertThat("testChangeOwner 0", found.getOwner().getLastName(), equalTo(newName));
     }
@@ -211,6 +229,8 @@ public class ItemListTest extends AbstractDSpaceObjectTest {
     	final String newName = "new name";
     	list.setName(newName);
 
+        commitAndReloadEntities();
+
         ItemList found = listService.find(context, list.getID());
         assertEquals("testName 0", found.getName(), newName);
     }
@@ -219,6 +239,8 @@ public class ItemListTest extends AbstractDSpaceObjectTest {
     public void testNotes() throws SQLException {
     	final String newNotes = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum eu ipsum lacinia, aliquet sapien in, tincidunt nisi. Donec consectetur feugiat arcu, vitae interdum orci convallis et. Pellentesque mollis gravida urna non lobortis. Etiam a commodo ligula. Integer varius metus aliquam, posuere est nec, volutpat metus. Aliquam malesuada pharetra rutrum. Fusce in leo porttitor, varius velit vitae, ullamcorper ligula. Nullam venenatis, mauris ultrices bibendum blandit, eros orci vehicula dui, sit amet imperdiet ante lectus in nulla. Integer mi orci, scelerisque id erat sed, auctor iaculis tortor. Ut ac mauris pharetra, posuere lacus ac, scelerisque ex. Maecenas mi ex, ornare id purus vestibulum, rhoncus vulputate eros.";
     	list.setNotes(newNotes);
+
+        commitAndReloadEntities();
 
         ItemList found = listService.find(context, list.getID());
         assertEquals("testNotes 0", found.getNotes(), newNotes);
@@ -236,6 +258,8 @@ public class ItemListTest extends AbstractDSpaceObjectTest {
     	assertEquals("testStatus 0", list.getStatus(), ItemList.Status.A);
     	
     	list.setStatus(ItemList.Status.I);
+        
+    	commitAndReloadEntities();
 
         ItemList found = listService.find(context, list.getID());
 
@@ -247,10 +271,29 @@ public class ItemListTest extends AbstractDSpaceObjectTest {
     	assertEquals("testAccessType 0", list.getAccessType(), ItemList.AccessType.P);
     	
     	list.setAccessType(ItemList.AccessType.S);
+        
+    	commitAndReloadEntities();
 
         ItemList found = listService.find(context, list.getID());
 
         assertEquals("testAccessType 1", found.getAccessType(), ItemList.AccessType.S);
+    }
+
+    @Test
+    public void testDeleteItem() throws SQLException, AuthorizeException, IOException {
+    	list.getItems().add(item1);
+    	list.getItems().add(item2);
+    	
+    	commitAndReloadEntities();
+
+        context.turnOffAuthorisationSystem();
+    	itemService.delete(context, item1);
+        context.restoreAuthSystemState();
+
+    	commitAndReloadEntities();
+
+        ItemList found = listService.find(context, list.getID());
+        assertEquals("testDeleteItem 0", 1L, found.getItems().size());
     }
 
 }
