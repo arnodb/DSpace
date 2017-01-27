@@ -650,6 +650,10 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
             harvestedItemService.delete(context, hi);
         }
 
+		for (ItemList list : item.getLists()) {
+			list.getItems().remove(item);
+		}
+        
         //Only clear collections after we have removed everything else from the item
         item.getCollections().clear();
         item.setOwningCollection(null);

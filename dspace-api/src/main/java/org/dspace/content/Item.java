@@ -84,7 +84,7 @@ public class Item extends DSpaceObject implements DSpaceObjectLegacySupport
     private final List<Bundle> bundles = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
-    private List<ItemList> lists;
+    private List<ItemList> lists = new ArrayList<>();
     
     @Transient
     private transient ItemService itemService;
@@ -353,6 +353,11 @@ public class Item extends DSpaceObject implements DSpaceObjectLegacySupport
         return itemService;
     }
 
+    /**
+     * Get the lists having this item.
+     *
+     * @return the lists in an unordered array
+     */
 	public List<ItemList> getLists() {
 		return lists;
 	}
